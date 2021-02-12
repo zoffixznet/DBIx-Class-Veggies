@@ -46,13 +46,18 @@ sub import {
     my $sub_belongs_to = $caller->can('belongs_to');
     $set_sub->(owned_by => sub {
         my ($col_name, @conf) = @_;
-        $sub_belongs_to->(
-            $col_name,
-            @conf ? @conf : (
+        if (@conf) {
+            $sub_belongs_to->($col_name, @conf)
+        }
+        else {
+            my $id_col = _idify_col($col_name);
+            $sub_column->($id_col, { data_type => 'INTEGER' });
+            $sub_belongs_to->(
+                $col_name,
                 _pkgify_col($col_name, $base_pkg),
-                _idify_col($col_name)
+                $id_col,
             )
-        )
+        }
     });
 
     my $sub_has_many = $caller->can('has_many');
@@ -230,6 +235,7 @@ Is equivalent to:
 
     package API::Result::Product;
     ...
+    icol 'order_id';
     belongs_to order => 'API::Result::Order' => 'order_id';
 
 The given argument is becomes the accessor name and is used
