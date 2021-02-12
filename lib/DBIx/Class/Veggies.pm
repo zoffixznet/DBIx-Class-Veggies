@@ -1,5 +1,7 @@
 package DBIx::Class::Veggies;
 
+# VERSION
+
 use strictures 2;
 use Import::Into ();
 use Sub::Util qw/set_subname/;
