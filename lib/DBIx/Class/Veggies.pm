@@ -10,7 +10,11 @@ require DBIx::Class::Candy;
 
 sub import {
     my ($pkg, %args) = @_;
-    $args{'-autotable'} //= v1;
+
+    # Default to v1 autotable and allow disabling that via undef/0
+    $args{'-autotable'} = v1 unless exists $args{'-autotable'};
+    delete $args{'-autotable'} unless $args{'-autotable'};
+
     DBIx::Class::Candy->import::into(1, %args);
 
     # Here, we grab Candy's helpers, before they get cleaned up by
