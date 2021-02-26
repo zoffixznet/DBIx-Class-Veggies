@@ -12,7 +12,7 @@ sub import {
     my ($pkg, %args) = @_;
 
     # Default to v1 autotable and allow disabling that via undef/0
-    $args{'-autotable'} = v1 unless exists $args{'-autotable'};
+    $args{'-autotable'} = v1   unless exists $args{'-autotable'};
     delete $args{'-autotable'} unless $args{'-autotable'};
 
     DBIx::Class::Candy->import::into(1, %args);
@@ -78,6 +78,14 @@ sub import {
     });
 
     $set_sub->(uniquely => sub { $caller->add_unique_constraint(@_) });
+
+    my $sub_table = $caller->can('table');
+    $set_sub->(table_from_full_class => sub {
+        my $name = lc $caller;
+        $name =~ s/::schema::result::/__/;
+        $name =~ s/::/_/g;
+        $sub_table->($name)
+    });
 }
 
 sub _pkgify_col {
@@ -257,3 +265,18 @@ Is equivalent to:
     __PACKAGE__->add_unique_constraint(
         constraint_name => [ qw/column1 column2/ ],
     );
+
+=head2 C<table_from_full_class>
+
+**EXPERIMENTAL**
+
+Calls C<__PACKAGE__->table> with the full class name as the table name. Does mild processing
+like replacing C<::> with C<_>, C::Schema::Result::> with C<__>, and lowercaseing. E.g.
+
+package MyApp::StuffForThing::Model::Schema::Result::Users;
+# ...
+table_from_full_class;
+
+Ends up with table name set to C<myapp_stuffforthing_model__users>.
+
+Processing details and whether this method exists at all or is called by default internally may change.
