@@ -38,7 +38,7 @@ sub import {
 
     my $sub_column = $caller->can('column');
     for my $sub (
-        [col  => 'TEXT'], [ucol => 'INTEGER UNSIGNED'],
+        [col  => 'TEXT'], [ucol => 'INTEGER UNSIGNED'], [bcol => 'BOOLEAN'],
         [tcol => 'TEXT'], [icol => 'INTEGER' ], [vcol => 'VARCHAR'],
     ) {
         $set_sub->($sub->[0] => sub {
@@ -208,6 +208,11 @@ Mnemonic I<integer column>.
 
 Alias for C<col>, with C<INTEGER UNSIGNED> as the default C<data_type>.
 Mnemonic I<unsigned integer column>.
+
+=head2 C<bcol>
+
+Alias for C<col>, with C<BOOLEAN> as the default C<data_type>.
+Mnemonic I<boolean column>.
 
 =head2 C<vcol>
 
